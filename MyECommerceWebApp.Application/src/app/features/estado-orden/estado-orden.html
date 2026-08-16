@@ -1,0 +1,63 @@
+<section class="card">
+  <h1>Estado de orden</h1>
+
+  <form class="inline" [formGroup]="consultaForm" (ngSubmit)="consultar()">
+    <label>Orden ID <input type="number" formControlName="ordenId" /></label>
+    <button type="submit">Consultar</button>
+  </form>
+
+  @if (mensaje()) {
+    <p class="success">{{ mensaje() }}</p>
+  }
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  @if (orden(); as actual) {
+    <dl>
+      <dt>Orden</dt><dd>#{{ actual.ordenId }}</dd>
+      <dt>Cliente</dt><dd>{{ actual.clienteNombre }} ({{ actual.email }})</dd>
+      <dt>Estado</dt><dd>{{ actual.estadoOrden }}</dd>
+      <dt>Pago</dt><dd>{{ actual.estadoPago || 'sin pago' }}</dd>
+      <dt>Total</dt><dd>{{ actual.total | currency:'USD' }}</dd>
+      <dt>Fecha</dt><dd>{{ actual.fechaOrden | date:'short' }}</dd>
+    </dl>
+
+    <h2>Detalle</h2>
+    <table>
+      <thead>
+        <tr><th>Producto</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th>Stock actual</th></tr>
+      </thead>
+      <tbody>
+        @for (linea of actual.detalles; track linea.ordenDetalleId) {
+          <tr>
+            <td>{{ linea.producto }}</td>
+            <td>{{ linea.cantidad }}</td>
+            <td>{{ linea.precioUnitario | currency:'USD' }}</td>
+            <td>{{ linea.subtotal | currency:'USD' }}</td>
+            <td>{{ linea.stockActual }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <h2>Pagos</h2>
+    <ul>
+      @for (pago of actual.pagos; track pago.pagoId) {
+        <li>#{{ pago.pagoId }} {{ pago.estado }} — intento {{ pago.intentos }} — {{ pago.metodoPago }}</li>
+      }
+    </ul>
+
+    @if (auth.isCliente) {
+      <form [formGroup]="pagoForm" (ngSubmit)="reintentarPago()">
+        <h3>Reintentar pago</h3>
+        <label>Método <input formControlName="metodoPago" /></label>
+        <label>Referencia <input formControlName="referencia" /></label>
+        <button type="submit" [disabled]="loading()">Reintentar</button>
+      </form>
+      <button type="button" class="secondary" [disabled]="loading()" (click)="actualizarInventario()">
+        Actualizar inventario
+      </button>
+    }
+  }
+</section>

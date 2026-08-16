@@ -1,0 +1,25 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Your_strong_Password123"
+    ports:
+      - "1433:1433"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - sqlserver
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ecommercedev;User Id=sa;Password=Your_strong_Password123;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      Jwt__Key: "dev-only-change-in-production-min-32-chars!!"
+      Jwt__Issuer: MyECommerceWebApp
+      Jwt__Audience: MyECommerceWebApp
+      DemoAdmin__Key: demo-admin
+      Cors__Origins__0: http://localhost:4200
+    ports:
+      - "8080:8080"

@@ -1,0 +1,238 @@
+{
+  "info": {
+    "name": "MyECommerceWebApp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5217" },
+    { "key": "token", "value": "" },
+    { "key": "adminToken", "value": "" },
+    { "key": "clienteId", "value": "1" },
+    { "key": "ordenId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Identificar cliente",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('token', json.token);",
+                  "pm.collectionVariables.set('clienteId', json.clienteId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan.perez@email.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/identificar"
+          }
+        },
+        {
+          "name": "Admin demo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.collectionVariables.set('adminToken', json.token);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"demoKey\": \"demo-admin\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/admin"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Registrar cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Ana\",\n  \"apellido\": \"Garcia\",\n  \"email\": \"ana.garcia@email.com\",\n  \"telefono\": \"555-0001\",\n  \"direccion\": \"Calle 10\"\n}"
+            },
+            "url": "{{baseUrl}}/api/clientes"
+          }
+        },
+        {
+          "name": "Obtener cliente",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/clientes/{{clienteId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar productos",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/productos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compras",
+      "item": [
+        {
+          "name": "Compra completa autorizada",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.ordenId) { pm.collectionVariables.set('ordenId', json.ordenId); }"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"metodoPago\": \"Tarjeta de credito\",\n  \"referencia\": \"VISA-4532\",\n  \"lineas\": [{ \"productoId\": 2, \"cantidad\": 1 }]\n}"
+            },
+            "url": "{{baseUrl}}/api/compras"
+          }
+        },
+        {
+          "name": "Compra rechazada CARD-0000",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"metodoPago\": \"Tarjeta de debito\",\n  \"referencia\": \"CARD-0000\",\n  \"lineas\": [{ \"productoId\": 3, \"cantidad\": 1 }]\n}"
+            },
+            "url": "{{baseUrl}}/api/compras"
+          }
+        },
+        {
+          "name": "Compra pendiente monto alto",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"metodoPago\": \"Transferencia\",\n  \"referencia\": \"WIRE-100\",\n  \"lineas\": [{ \"productoId\": 4, \"cantidad\": 1 }]\n}"
+            },
+            "url": "{{baseUrl}}/api/compras"
+          }
+        },
+        {
+          "name": "Crear orden",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"clienteId\": {{clienteId}},\n  \"lineas\": [{ \"productoId\": 2, \"cantidad\": 1 }]\n}"
+            },
+            "url": "{{baseUrl}}/api/ordenes"
+          }
+        },
+        {
+          "name": "Consultar estado",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}"
+          }
+        },
+        {
+          "name": "Procesar pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodoPago\": \"Tarjeta de credito\",\n  \"referencia\": \"VISA-4532\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/pagos"
+          }
+        },
+        {
+          "name": "Reintentar pago",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{token}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"metodoPago\": \"Tarjeta de credito\",\n  \"referencia\": \"VISA-4532\"\n}"
+            },
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/pagos/reintentar"
+          }
+        },
+        {
+          "name": "Actualizar inventario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{baseUrl}}/api/ordenes/{{ordenId}}/inventario"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bitacora",
+      "item": [
+        {
+          "name": "Listar logs",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": "{{baseUrl}}/api/logs"
+          }
+        }
+      ]
+    }
+  ]
+}

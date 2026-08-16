@@ -1,0 +1,9 @@
+@POST https://localhost:7287/api/auth/identificar
+Content-Type: application/json
+
+{
+  "email": "juan.perez@email.com"
+}
+
+###
+GET https://localhost:7287/api/productos

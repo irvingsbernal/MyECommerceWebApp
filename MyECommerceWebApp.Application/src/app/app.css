@@ -1,0 +1,48 @@
+.topbar {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: #111827;
+  color: #fff;
+}
+
+.brand {
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  gap: 1rem;
+}
+
+nav a, .session a {
+  color: #c7d2fe;
+  text-decoration: none;
+}
+
+nav a.active {
+  color: #fff;
+  font-weight: 700;
+}
+
+.session {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.session button {
+  background: #4f46e5;
+  padding: 0.35rem 0.7rem;
+}
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}

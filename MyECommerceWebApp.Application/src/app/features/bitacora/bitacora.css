@@ -1,0 +1,23 @@
+.filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.filters button {
+  background: #eef2ff;
+  color: #312e81;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.45rem;
+  border-bottom: 1px solid #e0e7ff;
+  vertical-align: top;
+}

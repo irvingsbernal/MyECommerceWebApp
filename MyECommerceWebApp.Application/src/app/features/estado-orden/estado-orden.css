@@ -1,0 +1,40 @@
+.inline {
+  display: flex;
+  gap: 0.75rem;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 0.35rem 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.45rem;
+  border-bottom: 1px solid #e0e7ff;
+}
+
+form {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #c7d2fe;
+  border-radius: 0.5rem;
+}
+
+.secondary {
+  margin-top: 0.75rem;
+  background: #0f766e;
+}

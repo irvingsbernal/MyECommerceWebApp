@@ -1,0 +1,25 @@
+<section>
+  <h1>Catálogo</h1>
+  <p class="muted">Productos activos. El stock se descuenta solo al confirmar el pago.</p>
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  <div class="grid">
+    @for (producto of productos(); track producto.productoId) {
+      <article class="card product">
+        <h2>{{ producto.nombre }}</h2>
+        <p>{{ producto.descripcion }}</p>
+        <p class="price">{{ producto.precio | currency:'USD' }}</p>
+        <p>Stock: {{ producto.stock }}</p>
+      </article>
+    }
+  </div>
+
+  @if (auth.isCliente) {
+    <a class="button-link" routerLink="/checkout">Ir al checkout</a>
+  } @else {
+    <a class="button-link" routerLink="/registro">Identifícate para comprar</a>
+  }
+</section>

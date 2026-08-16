@@ -1,0 +1,25 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.product h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.1rem;
+}
+
+.price {
+  font-weight: 700;
+  color: #4f46e5;
+}
+
+.button-link {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.7rem 1rem;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 0.6rem;
+  text-decoration: none;
+}

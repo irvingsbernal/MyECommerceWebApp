@@ -1,0 +1,22 @@
+<header class="topbar">
+  <a routerLink="/" class="brand">MyECommerce</a>
+  <nav>
+    <a routerLink="/catalogo" routerLinkActive="active">Catálogo</a>
+    <a routerLink="/checkout" routerLinkActive="active">Checkout</a>
+    <a routerLink="/ordenes" routerLinkActive="active">Orden</a>
+    <a routerLink="/bitacora" routerLinkActive="active">Bitácora</a>
+    <a routerLink="/registro" routerLinkActive="active">Acceso</a>
+  </nav>
+  <div class="session">
+    @if (auth.nombre()) {
+      <span>{{ auth.nombre() }} ({{ auth.role() }})</span>
+      <button type="button" (click)="auth.logout()">Salir</button>
+    } @else {
+      <a routerLink="/registro">Entrar</a>
+    }
+  </div>
+</header>
+
+<main>
+  <router-outlet />
+</main>

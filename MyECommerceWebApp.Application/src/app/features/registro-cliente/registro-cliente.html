@@ -1,0 +1,43 @@
+<section class="card">
+  <h1>Acceso al comercio</h1>
+  <p class="muted">Registra un cliente, identifícate con un email existente o entra como admin demo.</p>
+
+  <div class="tabs">
+    <button type="button" [class.active]="modo() === 'registro'" (click)="modo.set('registro')">Registro</button>
+    <button type="button" [class.active]="modo() === 'identificar'" (click)="modo.set('identificar')">Identificar</button>
+    <button type="button" [class.active]="modo() === 'admin'" (click)="modo.set('admin')">Admin</button>
+  </div>
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  @if (modo() === 'registro') {
+    <form [formGroup]="registroForm" (ngSubmit)="registrar()">
+      <label>Nombre <input formControlName="nombre" /></label>
+      <label>Apellido <input formControlName="apellido" /></label>
+      <label>Email <input type="email" formControlName="email" /></label>
+      <label>Teléfono <input formControlName="telefono" /></label>
+      <label>Dirección <input formControlName="direccion" /></label>
+      <button type="submit" [disabled]="loading()">Crear cuenta y continuar</button>
+    </form>
+  }
+
+  @if (modo() === 'identificar') {
+    <form [formGroup]="identificarForm" (ngSubmit)="identificar()">
+      <label>Email del cliente <input type="email" formControlName="email" /></label>
+      <p class="hint">Prueba: juan.perez@email.com o maria.lopez@email.com</p>
+      <button type="submit" [disabled]="loading()">Identificarme</button>
+    </form>
+  }
+
+  @if (modo() === 'admin') {
+    <form [formGroup]="adminForm" (ngSubmit)="admin()">
+      <label>Clave demo <input formControlName="demoKey" /></label>
+      <p class="hint">Clave por defecto: demo-admin</p>
+      <button type="submit" [disabled]="loading()">Entrar a bitácora</button>
+    </form>
+  }
+
+  <p class="muted"><a routerLink="/catalogo">Ver catálogo sin sesión</a></p>
+</section>

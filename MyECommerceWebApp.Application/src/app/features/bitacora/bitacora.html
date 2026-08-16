@@ -1,0 +1,38 @@
+<section class="card">
+  <h1>Bitácora</h1>
+  <p class="muted">Eventos de clientes, órdenes, pagos, inventario y errores.</p>
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  <div class="filters">
+    <button type="button" (click)="cargar()">Todos</button>
+    <button type="button" (click)="cargar('PAGO')">Pagos</button>
+    <button type="button" (click)="cargar('INVENTARIO')">Inventario</button>
+    <button type="button" (click)="cargar('ERROR')">Errores</button>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Op</th>
+        <th>Tabla</th>
+        <th>Registro</th>
+        <th>Mensaje</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (log of logs(); track log.logId) {
+        <tr>
+          <td>{{ log.fechaEvento | date:'short' }}</td>
+          <td>{{ log.operacion }}</td>
+          <td>{{ log.tablaAfectada }}</td>
+          <td>{{ log.registroId }}</td>
+          <td>{{ log.mensajeLog }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>
