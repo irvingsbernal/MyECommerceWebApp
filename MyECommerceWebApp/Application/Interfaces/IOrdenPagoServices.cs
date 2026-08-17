@@ -7,6 +7,10 @@ public interface IOrdenService
     Task<OrdenEstadoDto> CrearAsync(CrearOrdenRequest request, CancellationToken cancellationToken = default);
 
     Task<OrdenEstadoDto> GetEstadoAsync(int ordenId, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<OrdenEstadoDto>> ListarPorEstadoAsync(string estado, CancellationToken cancellationToken = default);
+
+    Task<OrdenEstadoDto> AutorizarPendienteAsync(int ordenId, CancellationToken cancellationToken = default);
 }
 
 public interface IPagoService

@@ -36,7 +36,7 @@ public class JwtTokenService : ITokenService
         [
             new Claim(JwtRegisteredClaimNames.Sub, "admin"),
             new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Name, "Administrador demo"),
+            new Claim(ClaimTypes.Name, "admin"),
             new Claim(ClaimTypes.Role, "admin")
         ]);
     }

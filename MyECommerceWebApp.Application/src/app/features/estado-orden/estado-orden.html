@@ -51,13 +51,17 @@
     @if (auth.isCliente) {
       <form [formGroup]="pagoForm" (ngSubmit)="reintentarPago()">
         <h3>Reintentar pago</h3>
-        <label>Método <input formControlName="metodoPago" /></label>
+        <label>
+          Método
+          <select formControlName="metodoPago">
+            @for (metodo of metodosPago; track metodo) {
+              <option [value]="metodo">{{ metodo }}</option>
+            }
+          </select>
+        </label>
         <label>Referencia <input formControlName="referencia" /></label>
         <button type="submit" [disabled]="loading()">Reintentar</button>
       </form>
-      <button type="button" class="secondary" [disabled]="loading()" (click)="actualizarInventario()">
-        Actualizar inventario
-      </button>
     }
   }
 </section>

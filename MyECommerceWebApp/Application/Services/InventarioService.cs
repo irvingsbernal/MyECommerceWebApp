@@ -59,6 +59,16 @@ public class InventarioService : IInventarioService
             throw new BusinessRuleException("Solo se puede actualizar inventario de ordenes confirmadas.");
         }
 
+        var yaActualizado = await _unitOfWork.Logs.ExistsAsync(
+            LogOperaciones.Inventario,
+            ordenId.ToString(),
+            cancellationToken);
+
+        if (yaActualizado)
+        {
+            throw new BusinessRuleException("El inventario de esta orden ya fue actualizado.");
+        }
+
         foreach (var detalle in orden.Detalles.OrderBy(item => item.ProductoId))
         {
             var affected = await _unitOfWork.Productos.TryDecrementStockAsync(

@@ -2,6 +2,8 @@ import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { showToast } from '../../core/alerts/toast';
+import { METODO_PAGO_DEFAULT, METODOS_PAGO } from '../../core/constants/metodos-pago';
 import { Producto } from '../../core/models/ecommerce.models';
 import { AuthService } from '../../core/services/auth.service';
 import { InventarioService } from '../../services/inventario.service';
@@ -38,8 +40,10 @@ export class CheckoutComponent {
     this.lineas().reduce((sum, linea) => sum + linea.producto.precio * linea.cantidad, 0)
   );
 
+  readonly metodosPago = METODOS_PAGO;
+
   readonly pagoForm = this.fb.nonNullable.group({
-    metodoPago: ['Tarjeta de credito', Validators.required],
+    metodoPago: [METODO_PAGO_DEFAULT, Validators.required],
     referencia: ['VISA-4532']
   });
 
@@ -81,12 +85,21 @@ export class CheckoutComponent {
         referencia: this.pagoForm.controls.referencia.value
       })
       .subscribe({
-        next: (result) => void this.router.navigate(['/ordenes', result.ordenId], {
-          state: { resultado: result.resultado }
-        }),
+        next: (result) => {
+          if (result.estadoOrden === 'confirmada' || result.estadoPago === 'autorizado') {
+            showToast('success', result.resultado || 'Compra autorizada.');
+          } else if (result.estadoOrden === 'rechazada' || result.estadoPago === 'rechazado') {
+            showToast('error', result.resultado || 'La compra fue rechazada.');
+          }
+
+          void this.router.navigate(['/ordenes', result.ordenId], {
+            state: { resultado: result.resultado }
+          });
+        },
         error: (err: { message?: string; status?: number }) => {
           this.loading.set(false);
           if (err.status === 409) {
+            showToast('error', 'No hay inventario suficiente para completar la compra.');
             this.error.set(
               'Stock insuficiente (posible compra simultánea). Se actualizó el catálogo.'
             );
@@ -94,6 +107,7 @@ export class CheckoutComponent {
             return;
           }
 
+          showToast('error', err.message ?? 'No se pudo procesar la compra.');
           this.error.set(err.message ?? 'No se pudo procesar la compra.');
         }
       });

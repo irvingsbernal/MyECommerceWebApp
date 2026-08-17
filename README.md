@@ -51,6 +51,29 @@ docker compose up --build
 
 API: http://localhost:8080/swagger
 
+## Guía de evaluación
+
+El pago no llama a un banco ni a una pasarela. El resultado lo deciden la **referencia** y el **monto** (simulador en Application).
+
+### Recorrido en la UI (http://localhost:4200)
+
+1. En `/registro`, pestaña Identificar, usa `juan.perez@email.com` y continúa.
+2. En Checkout, elige mouse o teclado y deja la referencia `VISA-4532`. Procesar compra: orden **confirmada**, pago **autorizado** y stock descontado.
+3. Repite la compra con referencia `CARD-0000`: pago **rechazado** y orden **rechazada**.
+4. Compra solo `Servidor Enterprise` (precio mayor a 10000): pago **pendiente**, orden sigue **pendiente** y no se descuenta stock.
+5. Opcional: `Edicion limitada` (stock 1) en dos sesiones a la vez (Juan y Maria). Una compra confirma; la otra responde 409.
+6. En `/registro`, pestaña Admin, clave `demo-admin`. Abre `/bitacora` y verifica eventos `PAGO`, `INVENTARIO` o `ERROR`.
+
+### Reglas del simulador
+
+| Condición | Estado del pago | Estado de la orden |
+|---|---|---|
+| La referencia termina en `0000` | `rechazado` | `rechazada` |
+| El total es mayor a 10000 | `pendiente` | `pendiente` (sin movimiento de stock) |
+| Cualquier otro caso | `autorizado` | `confirmada` (se descuenta stock) |
+
+La misma prueba por API está en Swagger (http://localhost:5217/swagger) o en [postman/MyECommerceWebApp.postman_collection.json](postman/MyECommerceWebApp.postman_collection.json).
+
 ## Arquitectura tecnica
 
 Capas en un solo proyecto API:

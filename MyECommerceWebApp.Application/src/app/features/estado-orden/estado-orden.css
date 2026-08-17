@@ -28,7 +28,7 @@ form {
   margin-top: 1rem;
 }
 
-input {
+input, select {
   padding: 0.55rem 0.7rem;
   border: 1px solid #c7d2fe;
   border-radius: 0.5rem;

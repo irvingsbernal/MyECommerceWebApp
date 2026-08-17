@@ -54,7 +54,7 @@ public class ClienteService : IClienteService
         var token = _tokenService.CreateClienteToken(
             cliente.ClienteId,
             cliente.Email,
-            $"{cliente.Nombre} {cliente.Apellido}");
+            cliente.Nombre);
 
         return cliente.ToAuthResponse(token, "cliente");
     }

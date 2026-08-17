@@ -37,4 +37,11 @@ public class LogRepository : ILogRepository
             .Take(take)
             .ToListAsync(cancellationToken);
     }
+
+    public Task<bool> ExistsAsync(string operacion, string registroId, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.AnyAsync(
+            log => log.Operacion == operacion && log.RegistroId == registroId,
+            cancellationToken);
+    }
 }

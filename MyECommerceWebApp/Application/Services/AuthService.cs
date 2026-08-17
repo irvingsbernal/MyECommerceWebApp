@@ -33,7 +33,7 @@ public class AuthService : IAuthService
         var token = _tokenService.CreateClienteToken(
             cliente.ClienteId,
             cliente.Email,
-            $"{cliente.Nombre} {cliente.Apellido}");
+            cliente.Nombre);
 
         return cliente.ToAuthResponse(token, "cliente");
     }
@@ -51,7 +51,7 @@ public class AuthService : IAuthService
             Token = _tokenService.CreateAdminToken(),
             Role = "admin",
             Email = _configuration["DemoAdmin:Email"] ?? "admin@ecommerce.local",
-            NombreCompleto = "Administrador demo"
+            NombreCompleto = "admin"
         };
     }
 }

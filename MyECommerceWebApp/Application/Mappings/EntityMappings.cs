@@ -95,6 +95,6 @@ public static class EntityMappings
         Role = role,
         ClienteId = cliente.ClienteId,
         Email = cliente.Email,
-        NombreCompleto = $"{cliente.Nombre} {cliente.Apellido}"
+        NombreCompleto = cliente.Nombre
     };
 }
