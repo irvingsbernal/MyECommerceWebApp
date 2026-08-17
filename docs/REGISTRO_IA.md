@@ -2,7 +2,7 @@
 
 ## Generado
 
-- Dominio alineado a `script_master.sql` (entidades, constantes, contratos de repositorio y UoW).
+- Dominio alineado a `db_script.sql` (entidades, constantes, contratos de repositorio y UoW).
 - `TryDecrementStockAsync` con `ExecuteUpdateAsync` (`WHERE Stock >= cantidad`).
 - Casos de uso: cliente, orden, pago simulado, inventario, compra completa con transaccion y rollback, bitacora.
 - API REST, middleware ProblemDetails, JWT, Swagger, CORS.

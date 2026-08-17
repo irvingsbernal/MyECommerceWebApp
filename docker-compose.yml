@@ -3,7 +3,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "Your_strong_Password123"
+      MSSQL_SA_PASSWORD: "xxxxxx"
     ports:
       - "1433:1433"
     volumes:
@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ecommercedev;User Id=sa;Password=Your_strong_Password123;TrustServerCertificate=True;MultipleActiveResultSets=true"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ecommercedev;User Id=sa;Password=xxxxxx;TrustServerCertificate=True;MultipleActiveResultSets=true"
       Jwt__Key: "dev-only-change-in-production-min-32-chars!!"
       Jwt__Issuer: MyECommerceWebApp
       Jwt__Audience: MyECommerceWebApp
