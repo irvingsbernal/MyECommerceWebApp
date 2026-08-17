@@ -2,11 +2,11 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { METODO_PAGO_DEFAULT, METODOS_PAGO } from '../../core/constants/metodos-pago';
 import { OrdenEstado } from '../../core/models/ecommerce.models';
 import { AuthService } from '../../core/services/auth.service';
 import { OrdenService } from '../../services/orden.service';
 import { PagoService } from '../../services/pago.service';
-import { InventarioService } from '../../services/inventario.service';
 
 @Component({
   selector: 'app-estado-orden',
@@ -19,9 +19,9 @@ export class EstadoOrdenComponent {
   private readonly fb = inject(FormBuilder);
   private readonly ordenService = inject(OrdenService);
   private readonly pagoService = inject(PagoService);
-  private readonly inventario = inject(InventarioService);
   readonly auth = inject(AuthService);
 
+  readonly metodosPago = METODOS_PAGO;
   readonly orden = signal<OrdenEstado | null>(null);
   readonly mensaje = signal<string | null>(history.state?.['resultado'] ?? null);
   readonly error = signal<string | null>(null);
@@ -32,7 +32,7 @@ export class EstadoOrdenComponent {
   });
 
   readonly pagoForm = this.fb.nonNullable.group({
-    metodoPago: ['Tarjeta de credito', Validators.required],
+    metodoPago: [METODO_PAGO_DEFAULT, Validators.required],
     referencia: ['VISA-4532']
   });
 
@@ -64,31 +64,6 @@ export class EstadoOrdenComponent {
           this.loading.set(false);
         }
       });
-  }
-
-  actualizarInventario(): void {
-    const orden = this.orden();
-    if (!orden) {
-      return;
-    }
-
-    this.loading.set(true);
-    this.error.set(null);
-    this.inventario.actualizarPorOrden(orden.ordenId).subscribe({
-      next: () => {
-        this.mensaje.set('Inventario actualizado.');
-        this.cargar(orden.ordenId);
-      },
-      error: (err: { message?: string; status?: number }) => {
-        this.loading.set(false);
-        this.error.set(
-          err.status === 409
-            ? 'Stock insuficiente (posible compra simultánea).'
-            : err.message ?? 'No se pudo actualizar el inventario.'
-        );
-        this.cargar(orden.ordenId);
-      }
-    });
   }
 
   private cargar(id: number): void {

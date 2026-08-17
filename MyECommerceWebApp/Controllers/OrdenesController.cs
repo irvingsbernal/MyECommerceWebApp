@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyECommerceWebApp.Application.DTOs.Ordenes;
 using MyECommerceWebApp.Application.Exceptions;
 using MyECommerceWebApp.Application.Interfaces;
+using MyECommerceWebApp.Domain.Constants;
 
 namespace MyECommerceWebApp.Controllers;
 
@@ -38,6 +39,16 @@ public class OrdenesController : ControllerBase
         return CreatedAtAction(nameof(GetEstado), new { id = orden.OrdenId }, orden);
     }
 
+    [HttpGet]
+    [Authorize(Policy = "Admin")]
+    [ProducesResponseType(typeof(IReadOnlyList<OrdenEstadoDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<OrdenEstadoDto>>> Listar(
+        [FromQuery] string estado = OrdenEstados.Pendiente,
+        CancellationToken cancellationToken = default)
+    {
+        return Ok(await _ordenService.ListarPorEstadoAsync(estado, cancellationToken));
+    }
+
     [HttpGet("{id:int}")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(OrdenEstadoDto), StatusCodes.Status200OK)]
@@ -68,8 +79,17 @@ public class OrdenesController : ControllerBase
         return Ok(await _pagoService.ReintentarAsync(id, request, cancellationToken));
     }
 
+    [HttpPost("{id:int}/autorizar")]
+    [Authorize(Policy = "Admin")]
+    [ProducesResponseType(typeof(OrdenEstadoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<OrdenEstadoDto>> Autorizar(int id, CancellationToken cancellationToken)
+    {
+        return Ok(await _ordenService.AutorizarPendienteAsync(id, cancellationToken));
+    }
+
     [HttpPost("{id:int}/inventario")]
-    [Authorize(Policy = "Cliente")]
+    [Authorize(Policy = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> ActualizarInventario(int id, CancellationToken cancellationToken)

@@ -25,7 +25,7 @@ label {
   font-weight: 600;
 }
 
-input {
+input, select {
   padding: 0.6rem 0.75rem;
   border: 1px solid #c7d2fe;
   border-radius: 0.5rem;

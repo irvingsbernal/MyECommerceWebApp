@@ -1,0 +1,44 @@
+<section class="card">
+  <h1>Órdenes pendientes</h1>
+  <p class="muted">Autoriza pagos en revisión (totales mayores a 10,000) y confirma la orden.</p>
+
+  @if (error()) {
+    <p class="alert">{{ error() }}</p>
+  }
+
+  <table>
+    <thead>
+      <tr>
+        <th>Orden</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Pago</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (orden of ordenes(); track orden.ordenId) {
+        <tr>
+          <td>#{{ orden.ordenId }}</td>
+          <td>{{ orden.clienteNombre }}</td>
+          <td>{{ orden.fechaOrden | date:'short' }}</td>
+          <td>{{ orden.total | currency:'USD' }}</td>
+          <td>{{ orden.estadoPago || 'sin pago' }}</td>
+          <td>
+            <button
+              type="button"
+              (click)="autorizar(orden)"
+              [disabled]="autorizandoId() === orden.ordenId">
+              Autorizar
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="6" class="muted">No hay órdenes pendientes.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

@@ -51,7 +51,7 @@ sequenceDiagram
 
 ## Tablas
 
-El modelo EF replica `script_master.sql`: `Clientes`, `Productos`, `Ordenes`, `OrdenDetalle`, `Pagos`, `Logs`.
+El modelo EF replica `db_script.sql`: `Clientes`, `Productos`, `Ordenes`, `OrdenDetalle`, `Pagos`, `Logs`.
 
 No hay tabla de kardex ni catalogo separado: el stock vive en `Productos.Stock` y el historial en `Logs` (`INVENTARIO`).
 

@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { showToast } from '../../core/alerts/toast';
 import { ClienteService } from '../../services/cliente.service';
 import { AuthApiService } from '../../services/auth-api.service';
 
@@ -39,6 +40,7 @@ export class RegistroClienteComponent {
   registrar(): void {
     if (this.registroForm.invalid) {
       this.registroForm.markAllAsTouched();
+      showToast('warning', 'Completa los datos obligatorios del registro.');
       return;
     }
 

@@ -1,0 +1,16 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.45rem;
+  border-bottom: 1px solid #e0e7ff;
+  vertical-align: middle;
+}
+
+td button {
+  padding: 0.4rem 0.8rem;
+}

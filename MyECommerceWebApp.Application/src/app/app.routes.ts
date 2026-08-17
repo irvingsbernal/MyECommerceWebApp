@@ -28,6 +28,14 @@ export const routes: Routes = [
       import('./features/estado-orden/estado-orden').then((m) => m.EstadoOrdenComponent)
   },
   {
+    path: 'pendientes',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/ordenes-pendientes/ordenes-pendientes').then(
+        (m) => m.OrdenesPendientesComponent
+      )
+  },
+  {
     path: 'bitacora',
     canActivate: [adminGuard],
     loadComponent: () => import('./features/bitacora/bitacora').then((m) => m.BitacoraComponent)

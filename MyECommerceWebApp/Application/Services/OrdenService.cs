@@ -11,10 +11,12 @@ namespace MyECommerceWebApp.Application.Services;
 public class OrdenService : IOrdenService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly InventarioService _inventarioService;
 
-    public OrdenService(IUnitOfWork unitOfWork)
+    public OrdenService(IUnitOfWork unitOfWork, InventarioService inventarioService)
     {
         _unitOfWork = unitOfWork;
+        _inventarioService = inventarioService;
     }
 
     public async Task<OrdenEstadoDto> CrearAsync(CrearOrdenRequest request, CancellationToken cancellationToken = default)
@@ -35,6 +37,88 @@ public class OrdenService : IOrdenService
         }
 
         return orden.ToEstadoDto();
+    }
+
+    public async Task<IReadOnlyList<OrdenEstadoDto>> ListarPorEstadoAsync(
+        string estado,
+        CancellationToken cancellationToken = default)
+    {
+        var ordenes = await _unitOfWork.Ordenes.GetByEstadoAsync(estado, cancellationToken);
+        return ordenes.Select(orden => orden.ToEstadoDto()).ToList();
+    }
+
+    public async Task<OrdenEstadoDto> AutorizarPendienteAsync(int ordenId, CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            var orden = await _unitOfWork.Ordenes.GetWithDetailsAsync(ordenId, cancellationToken);
+            if (orden is null)
+            {
+                throw new NotFoundException("Orden no encontrada.");
+            }
+
+            if (orden.Estado != OrdenEstados.Pendiente)
+            {
+                throw new BusinessRuleException("Solo se pueden autorizar ordenes pendientes.");
+            }
+
+            var ultimoPago = orden.Pagos.OrderByDescending(pago => pago.PagoId).FirstOrDefault();
+            if (ultimoPago is null)
+            {
+                await _unitOfWork.Pagos.AddAsync(new Pago
+                {
+                    OrdenId = orden.OrdenId,
+                    Monto = orden.Total,
+                    Estado = PagoEstados.Autorizado,
+                    MetodoPago = "Autorizacion admin",
+                    Intentos = 1,
+                    FechaRegistro = DateTime.UtcNow,
+                    FechaPago = DateTime.UtcNow
+                }, cancellationToken);
+            }
+            else if (ultimoPago.Estado == PagoEstados.Pendiente)
+            {
+                ultimoPago.Estado = PagoEstados.Autorizado;
+                ultimoPago.FechaPago = DateTime.UtcNow;
+                ultimoPago.MensajeError = null;
+                _unitOfWork.Pagos.Update(ultimoPago);
+            }
+            else
+            {
+                throw new BusinessRuleException("Solo se pueden autorizar ordenes con pago pendiente de revision.");
+            }
+
+            orden.Estado = OrdenEstados.Confirmada;
+            _unitOfWork.Ordenes.Update(orden);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            await LogWriter.AddAsync(
+                _unitOfWork,
+                "Pagos",
+                LogOperaciones.Pago,
+                orden.OrdenId.ToString(),
+                "Pago autorizado por administrador.",
+                cancellationToken);
+
+            await _inventarioService.DescontarCoreAsync(orden.OrdenId, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            var actualizada = await _unitOfWork.Ordenes.GetWithDetailsAsync(orden.OrdenId, cancellationToken);
+            return actualizada!.ToEstadoDto();
+        }
+        catch (InsufficientStockException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 
     internal async Task<Orden> CrearInternoAsync(

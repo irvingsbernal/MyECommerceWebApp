@@ -10,4 +10,6 @@ public interface ILogRepository
         int take = 100,
         string? operacion = null,
         CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsAsync(string operacion, string registroId, CancellationToken cancellationToken = default);
 }

@@ -36,7 +36,14 @@
   </table>
 
   <form [formGroup]="pagoForm" (ngSubmit)="comprar()">
-    <label>Método de pago <input formControlName="metodoPago" /></label>
+    <label>
+      Método de pago
+      <select formControlName="metodoPago">
+        @for (metodo of metodosPago; track metodo) {
+          <option [value]="metodo">{{ metodo }}</option>
+        }
+      </select>
+    </label>
     <label>Referencia <input formControlName="referencia" /></label>
     <p><strong>Total: {{ total() | currency:'USD' }}</strong></p>
     <button type="submit" [disabled]="loading()">Procesar compra</button>
