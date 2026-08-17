@@ -6,13 +6,25 @@ services:
       MSSQL_SA_PASSWORD: "Your_strong_Password123"
     ports:
       - "1433:1433"
+    volumes:
+      - ./init.db.sh:/init.db.sh:ro
+      - ./init.sql:/init.sql:ro
+      - sqlserver_data:/var/opt/mssql
+    command: ["/bin/bash", "/init.db.sh"]
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /tmp/db-ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 45s
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=ecommercedev;User Id=sa;Password=Your_strong_Password123;TrustServerCertificate=True;MultipleActiveResultSets=true"
@@ -21,5 +33,18 @@ services:
       Jwt__Audience: MyECommerceWebApp
       DemoAdmin__Key: demo-admin
       Cors__Origins__0: http://localhost:4200
+      Cors__Origins__1: http://localhost
     ports:
       - "8080:8080"
+
+  frontend:
+    build:
+      context: ./MyECommerceWebApp.Application
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+
+volumes:
+  sqlserver_data:
